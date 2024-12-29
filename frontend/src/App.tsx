@@ -1,46 +1,31 @@
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
-import { login } from "./lib/queries";
+import useGameStateManager from "./stores/useGameStateManager";
+import useAuth from "./stores/useAuth";
+import {
+  GameOverScreen,
+  GameScreen,
+  LoginScreen,
+  PauseScreen,
+  TitleScreen,
+  WinScreen,
+} from "./screens";
 
 function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { state } = useGameStateManager();
+  const { isAuthenticated } = useAuth();
 
-  const { mutate } = useMutation({
-    mutationKey: ["login", username, password],
-    mutationFn: () => login(username, password),
-    onError: (error) => alert(error.message),
-    onSuccess: () => console.log("Logged in!"),
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    mutate();
-  };
-
-  return (
-    <form
-      action=""
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4 items-center justify-center p-4 bg-slate-900 h-screen"
-    >
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit" className="text-white">
-        Login
-      </button>
-    </form>
-  );
+  if (!isAuthenticated()) return <LoginScreen />;
+  switch (state) {
+    case "lose":
+      return <GameOverScreen />;
+    case "win":
+      return <WinScreen />;
+    case "paused":
+      return <PauseScreen />;
+    case "playing":
+      return <GameScreen />;
+    default:
+      return <TitleScreen />;
+  }
 }
 
 export default App;
