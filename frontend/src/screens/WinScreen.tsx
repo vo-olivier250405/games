@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 const WinScreen: FC = () => {
-  const CODE = import.meta.env.CODE || "";
+  const CODE = import.meta.env.VITE_CODE || "";
   return (
     <div>
       <h1>Win Screen</h1>
